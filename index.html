@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+
+        <!-- Bootstrap CSS -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+            crossorigin="anonymous"
+        />
+
+        <title>Hello, world!</title>
+        <link rel="stylesheet" href="style.css" />
+
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+        <script
+            type="text/javascript"
+            src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-61a709f5416eb873"
+        ></script>
+		<!-- chart.js 차트 플러그인 불러오기 -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2"></script>
+		<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.1/dist/chart.min.js"></script> -->
+		<!-- chart.js 차트 플러그인 datalabel 추가 모듈불러오기(그래프 내 퍼센트 입력하기 위해 사용) -->
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light nav-distance">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">관상은 싸이언스 (Ver.남자)</a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a
+                                class="nav-link dropdown-toggle"
+                                href="#"
+                                id="navbarDropdown"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                Dropdown
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled">Disabled</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex">
+                        <input
+                            class="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                        />
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <section class="section">
+            <h1 class="title">관상은 싸이언스!</h1>         
+            <h2 class="title2">당신의 얼굴에도 범죄자의 얼굴이 보일까!?</h2>
+            <h3 class="subtitle">500명의 범죄자의 얼굴로 만들어진 Ai 입니다.</h3>
+        </section>
+        <script
+            class="jsbin"
+            src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+        ></script>
+        <div class="file-upload">
+            <div class="image-upload-wrap">
+                <input
+                    class="file-upload-input"
+                    type="file"
+                    onchange="readURL(this);"
+                    accept="image/*"
+                />
+                <div class="drag-text">
+                    <img src="image/upload.jpg" style="width:100%;height:350px"/>
+                </div>
+            </div>
+            <div class="file-upload-content">
+                <img class="file-upload-image" id="face-image" src="#" alt="your image" />
+                <div id="loading" class=:"animated bounce">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only"></span>
+                </div>
+                <p class="text-center">AI가 당신의 얼굴과 범죄성향을 분석중입니다.</p>
+            </div>
+			<!-- 그래프 그리기 영역 -->
+			<div class="drag-text" id="myChartDiv"> <!-- 다른 사진으로 입력시 캔버스를 초기화하기위해  div로 묶어줌 -->
+				<canvas id="myChart" style="height:30vh; width:70vw"></canvas>
+			</div>
+            <p class="result-message"></p>
+            <div id="label-container" class="d-flex flex-colimn justify-content-around" style="display:none!important;"></div>
+
+            <!-- Go to www.addthis.com/dashboard to customize your tools -->
+            <div class="addthis_inline_share_toolbox_l9dh"></div>
+
+            <div class="pt-5 image-title-wrap">
+                <button type="button p-2" onclick="removeUpload()" class="remove-image">
+                    <span class="try-again-text">다른 사진으로 재시도</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="webcam-container"></div>
+
+        <!-- Optional JavaScript; choose one of the two! -->
+
+        <!-- Option 1: Bootstrap Bundle with Popper -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"
+        ></script>
+
+        <!-- Option 2: Separate Popper and Bootstrap JS -->
+        <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    -->
+
+        <div id="disqus_thread"></div>
+        <script>
+            /**
+             *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+             *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+            /*
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+            (function () {
+                // DON'T EDIT BELOW THIS LINE
+                var d = document,
+                    s = d.createElement('script');
+                s.src = 'https://choicoding-1.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+        <noscript
+            >Please enable JavaScript to view the
+            <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript
+        >
+
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+        <script>
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('.image-upload-wrap').hide();
+                        $('.file-upload-image').attr('src', e.target.result);
+                        $('.file-upload-content').show();
+                        $('.image-title').html(input.files[0].name);
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                    init().then(() => {
+                        console.log('hello');
+                        predict();
+                    });
+                } else {
+                    removeUpload();
+                }
+            }
+
+			// 다른사진으로 업로드 버튼 클릭 이벤트
+            function removeUpload() {
+				
+				resetChart();	// 차트 리셋
+				
+				$('.spinner-border').show();	//로딩중 표시 다시 활성화
+				$('.text-center').show();	//로딩중 표시 다시 활성화
+                $('.file-upload-input').replaceWith($('.file-upload-input').clone());
+                $('.file-upload-content').hide();
+                $('.image-upload-wrap').show();
+            }
+            $('.image-upload-wrap').bind('dragover', function () {
+                $('.image-upload-wrap').addClass('image-dropping');
+            });
+            $('.image-upload-wrap').bind('dragleave', function () {
+                $('.image-upload-wrap').removeClass('image-dropping');
+            });
+        </script>
+        <script type="text/javascript">
+            // More API functions here:
+            // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+            // the link to your model provided by Teachable Machine export panel
+            const URL = 'https://teachablemachine.withgoogle.com/models/fTC05M9th/';
+
+            let model, webcam, labelContainer, maxPredictions;
+
+            // Load the image model and setup the webcam
+            async function init() {
+                const modelURL = URL + 'model.json';
+                const metadataURL = URL + 'metadata.json';	// 별명이름 데이터 url
+
+                // load the model and metadata
+                // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+                // or files from your local hard drive
+                // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+                labelContainer = document.getElementById('label-container');
+                for (let i = 0; i < maxPredictions; i++) {
+                    // and class labels
+                    labelContainer.appendChild(document.createElement('div'));
+                }
+            }
+
+            // run the webcam image through the image model
+            async function predict() {
+                // predict can take in an image, video or canvas html element
+                var image = document.getElementById('face-image');
+                const prediction = await model.predict(image, false);
+                prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability));
+
+                console.log(prediction[0].className);
+                var resultMessege;
+                switch (prediction[0].className) {
+                    case '순딩이':
+                        resultMessege = '당신은 킹반인 얼굴형 이군요! 범죄와는 거리가 먼 사람의 얼굴을 가지고 있네요';
+                        break;
+                    case '욱쟁이':
+                        resultMessege = '당신의 얼굴에선 약간의 다혈질적인 모습이 보여요. 욱하는 상황을 조심하세요!';
+                        break;
+                    case '성범죄자':
+                        resultMessege = '당신의 얼굴에선 [성]과 관련된 문제를 가진 사람들의 얼굴이 보여요. 이성문제를 조심하세요! ';
+                        break;
+                    case '폭행살인':
+                        resultMessege = '당신의 얼굴에선 [폭행/살인]과 관련된 문제를 가진 사람들의 얼굴이 보여요. 자신에게 폭력적인 모습이 있는지 돌아보세요!';
+                        break;
+                    case '사기절도':
+                        resultMessege = '당신의 얼굴에선 [사기/절도]와 관련된 문제를 가진 사람들의 얼굴이 보여요. 남의 물건이나 재산을 탐한적이 있었나요?';
+                        break;
+                    default:
+                        resultMessege = '알수없음';
+                        break;
+                }
+                $('.result-message').html(resultMessege);
+				
+				// 로딩중멘트 숨기기
+				$('.spinner-border').hide();
+				$('.text-center').hide();
+				
+				const fixedNameList = [];	// 별명리스트
+				const persentList = [];		// 퍼센트리스트
+
+				// 별명 바꾸는 영역
+                for (let i = 0; i < maxPredictions; i++) {
+					var fixedName ="";
+					switch (prediction[i].className) {
+						case '순딩이':
+							fixedName = '일반인';
+							break;
+						case '욱쟁이':
+							fixedName = '다혈질';
+							break;
+						case '성범죄자':
+							fixedName = '성범죄';
+							break;
+						case '폭행살인':
+							fixedName = '폭행/살인';
+							break;
+						case '사기절도':
+							fixedName = '사기/절도';
+							break;
+						default:
+							fixedName = '알수없음';
+							break;
+					}
+					fixedNameList.push(fixedName);									// 별명 별명 리스트에 넣기
+					persentList.push(prediction[i].probability.toFixed(2)*100);		// 각 퍼센트 값에 100 곱해서 퍼센트리스트에 넣기
+                    const classPrediction =
+                       fixedName + ': ' + prediction[i].probability.toFixed(2);		// "별명 : 퍼센트" 입력받는 부분
+                    labelContainer.childNodes[i].innerHTML = classPrediction;
+                }
+				console.log(fixedNameList);
+				console.log(persentList);
+				// 로딩이 끝나면 차트 그리기
+				DrawChart(fixedNameList,persentList);
+
+            }
+			
+        </script>
+			
+		<script>
+			
+			var canvasheight = 20;
+			var canvasWidth = 70;
+			$( window ).resize(function() {	//창크기 변화 감지
+				canvasResize();
+			});
+
+			function canvasResize(){		// 그래프 크기 변환
+			var windowWidth = $( window ).width();
+				console.log(windowWidth);
+				if(windowWidth <= 300) {
+					//창 가로 크기가 500 미만일 경우
+					canvasheight = 30;
+					canvasWidth = 100;
+				}else if(windowWidth > 300 && windowWidth <= 400) {
+					//창 가로 크기가 600보다 클 경우
+					canvasheight = 30;
+					canvasWidth = 500;
+				} else if(windowWidth > 400 && windowWidth <= 600) {
+					//창 가로 크기가 600보다 클 경우
+					canvasheight = 30;
+					canvasWidth = 80;
+				} else if(windowWidth > 600) {
+					//창 가로 크기가 600보다 클 경우
+					canvasheight = 40;
+					canvasWidth = 100;
+				}
+				$('#myChart').css('height',canvasheight+'vh');
+				$('#myChart').css('width',canvasWidth+'vw');
+			}
+
+			
+			// 차트그리기 함수
+			function DrawChart(labelList,dataList){
+				canvasResize();
+				const ctx = document.getElementById('myChart').getContext('2d');
+				const myChart = new Chart(ctx, {
+					
+					
+					type: 'bar', //차트 타입
+					data: {
+						labels: labelList,
+						datasets: [{
+							backgroundColor: [	// 채색
+								'rgba(255, 55, 132, 1)',
+								'rgba(54, 162, 235, 1)',
+								'rgba(255, 206, 86, 1)',
+								'rgba(75, 192, 192, 1)',
+								'rgba(153, 102, 255, 1)'
+							],
+							data: dataList,
+							datalabels: {	//그래프 내 퍼센트 위치 및 설정
+								align: 'middle',
+								anchor: 'middle'
+							},
+						}]
+					},
+					plugins: [ChartDataLabels],
+					options: {
+						responsive: false,
+						plugins: {
+							legend: { display: false },
+							datalabels: {
+								color: 'white',
+								display: function(context) {
+									return context.dataset.data[context.dataIndex] > 15;
+								},
+								font: {
+									weight: 'bold'
+								},
+								formatter: Math.round
+							}
+
+						},
+						indexAxis: 'y',	//차트 가로새로 지정
+
+						// Core options
+						aspectRatio: 5 / 3,
+						layout: {
+							padding: {
+							top: 24,
+								right: 16,
+								bottom: 0,
+								left: 8
+							}
+						},
+						elements: {
+							line: {
+								fill: false
+							},
+							point: {
+								hoverRadius: 7,
+								radius: 5
+							}
+						},
+						scales: {
+							x: {
+								min: 0,
+								max: 100
+							},
+							y: {
+								stacked: true
+							},
+						}
+					}
+					
+
+				});
+			}
+			
+			// 차트 리셋
+			function resetChart(){
+				$('#myChart').remove(); // 차트제거
+				$('#myChartDiv').append('<canvas id="myChart" style="height:30vh; width:70vw"></canvas>'); // 캔버스 새로생성
+				canvasResize();
+			};
+
+		</script>
+        
+    </body>
+
+    <!-- Copyright (c) 2021 by Aaron Vanston (https://codepen.io/aaronvanston/pen/yNYOXR)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
+</html>
